@@ -1,4 +1,8 @@
 $workingDir = (Get-Location)
+
+Write-Host "Starting processes ..."
+Write-Host "Press any key to close them ..."
+
 $first = Start-Job -ScriptBlock {
     param($workingDir)
     $firstPath = -join ($workingDir, "\first.bat")
@@ -13,15 +17,21 @@ $second = Start-Job -ScriptBlock {
 
 While (Get-Job -State "Running") { 
     if ([console]::KeyAvailable) {
-        break
+        break;
     }
     if ($first.HasMoreData) {
-        Write-Host $first.ChildJobs[0].Output
+        Write-Host ("From first:
+		" + $first.ChildJobs[0].Output + "
+        ")
     }
     if ($second.HasMoreData) {
-        Write-Host $second.ChildJobs[0].Output
+        Write-Host ("From second:
+		" + $second.ChildJobs[0].Output + "
+        ")
     }
-    Start-Sleep 4
+    Start-Sleep 10
 }
-$first | Stop-Job
-$second | Stop-Job
+
+Write-Host "All done!!!"
+Write-Host "Press any key to continue..."
+$Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyUp") > $null
